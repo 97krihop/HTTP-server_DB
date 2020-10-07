@@ -1,9 +1,8 @@
 package database;
 
+import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
-
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Random;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -21,11 +20,7 @@ class ProductDaoTest {
     private JdbcDataSource getJdbcDataSource() {
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setURL("jdbc:h2:mem:testdatabase;DB_CLOSE_DELAY=-1");
-        try(Connection connection = dataSource.getConnection()){
-            connection.prepareStatement("create table products (name varchar)").executeUpdate();
-        }catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Flyway.configure().dataSource(dataSource).load().migrate();
         return dataSource;
     }
 
