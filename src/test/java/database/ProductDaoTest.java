@@ -18,11 +18,13 @@ class ProductDaoTest {
         assertThat(productDao.list()).contains(product);
     }
 
-    private JdbcDataSource getJdbcDataSource() throws SQLException {
+    private JdbcDataSource getJdbcDataSource() {
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setURL("jdbc:h2:mem:testdatabase;DB_CLOSE_DELAY=-1");
         try(Connection connection = dataSource.getConnection()){
             connection.prepareStatement("create table products (name varchar)").executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
         }
         return dataSource;
     }

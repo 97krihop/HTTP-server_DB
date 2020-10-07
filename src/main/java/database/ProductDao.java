@@ -26,25 +26,15 @@ public class ProductDao {
         dataSource.setUser("kristianiashop");
         dataSource.setPassword("PzBhrjmtoAaC");
 
+        ProductDao productDao = new ProductDao(dataSource);
+
         System.out.println("Please enter product name:");
         Scanner scanner = new Scanner(System.in);
-        String product = scanner.nextLine();
+        String productName = scanner.nextLine();
 
-        try(Connection connection = dataSource.getConnection()){
-            try(PreparedStatement statement = connection.prepareStatement("insert into products (name) values (?)")){
-                statement.setString(1, product);
-                statement.executeUpdate();
-            }
-        }
-
-        try(Connection connection = dataSource.getConnection()){
-            try(PreparedStatement statement = connection.prepareStatement("select * from products")){
-                try(ResultSet rs = statement.executeQuery()){
-                    while(rs.next()){
-                        System.out.println(rs.getString("name"));
-                    }
-                }
-            }
+        productDao.insert(productName);
+        for(String product : productDao.list()){
+            System.out.println(product);
         }
     }
 
@@ -58,16 +48,16 @@ public class ProductDao {
     }
 
     public List <String> list() throws SQLException {
-        List<String> result = new ArrayList<>();
+        List<String> products = new ArrayList<>();
         try(Connection connection = dataSource.getConnection()){
             try(PreparedStatement statement = connection.prepareStatement("select * from products")){
                 try(ResultSet rs = statement.executeQuery()){
                     while(rs.next()){
-                        result.add(rs.getString("name"));
+                        products.add(rs.getString("name"));
                     }
                 }
             }
         }
-        return result;
+        return products;
     }
 }
