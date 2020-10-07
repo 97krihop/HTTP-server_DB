@@ -5,10 +5,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 
 public class ProductDao {
+
+    private ArrayList <String> products = new ArrayList <>();
+
     public static void main(String[] args) throws SQLException {
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
         dataSource.setUrl("jdbc:postgresql://localhost:5432/shop_app");
@@ -21,7 +26,7 @@ public class ProductDao {
 
         try(Connection connection = dataSource.getConnection()){
             try(PreparedStatement statement = connection.prepareStatement("insert into products (name) values (?)")){
-                statement.setString(1,product);
+                statement.setString(1, product);
                 statement.executeUpdate();
             }
         }
@@ -35,5 +40,13 @@ public class ProductDao {
                 }
             }
         }
+    }
+
+    public void insert(String product) {
+        products.add(product);
+    }
+
+    public List <String> list() {
+        return products;
     }
 }
