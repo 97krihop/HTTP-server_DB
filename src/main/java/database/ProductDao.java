@@ -32,28 +32,30 @@ public class ProductDao {
         Scanner scanner = new Scanner(System.in);
         String productName = scanner.nextLine();
 
-        productDao.insert(productName);
-        for(String product : productDao.list()){
+        //productDao.insert(productName);
+        for(Product product : productDao.list()){
             System.out.println(product);
         }
     }
 
-    public void insert(String product) throws SQLException {
+    public void insert(Product product) throws SQLException {
         try(Connection connection = dataSource.getConnection()){
             try(PreparedStatement statement = connection.prepareStatement("insert into products (name) values (?)")){
-                statement.setString(1, product);
+                statement.setString(1, product.getName());
                 statement.executeUpdate();
             }
         }
     }
 
-    public List <String> list() throws SQLException {
-        List <String> products = new ArrayList <>();
+    public List <Product> list() throws SQLException {
+        List <Product> products = new ArrayList <>();
         try(Connection connection = dataSource.getConnection()){
             try(PreparedStatement statement = connection.prepareStatement("select * from products")){
                 try(ResultSet rs = statement.executeQuery()){
                     while(rs.next()){
-                        products.add(rs.getString("name"));
+                        Product product = new Product();
+                        product.setName(rs.getString("name"));
+                        products.add(product);
                     }
                 }
             }
