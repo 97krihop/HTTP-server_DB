@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 public class ProductDao {
 
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public ProductDao(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -31,10 +31,11 @@ public class ProductDao {
         System.out.println("Please enter product name:");
         Scanner scanner = new Scanner(System.in);
         String productName = scanner.nextLine();
-
-        //productDao.insert(productName);
+        Product prod = new Product();
+        prod.setName(productName);
+        productDao.insert(prod);
         for(Product product : productDao.list()){
-            System.out.println(product);
+            System.out.println(product.getName());
         }
     }
 
@@ -61,5 +62,24 @@ public class ProductDao {
             }
         }
         return products;
+    }
+
+    public Product retrieve(int id) throws SQLException {
+        try(Connection connection = dataSource.getConnection()){
+            try(PreparedStatement statement = connection.prepareStatement("select * from products")){
+                try(ResultSet rs = statement.executeQuery()){
+                    while(rs.next()){
+                        if(Integer.parseInt(rs.getString("ID")) == id){
+                            Product product = new Product();
+                            product.setName(rs.getString("name"));
+                            return product;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        return null;
     }
 }

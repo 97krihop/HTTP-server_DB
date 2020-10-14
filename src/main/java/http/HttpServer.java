@@ -11,7 +11,7 @@ import java.util.List;
 public class HttpServer {
 
     private File contentRoot;
-    private List<String> productNames = new ArrayList<>();
+    private final List<String> productNames = new ArrayList<>();
 
     public HttpServer(int port) throws IOException {
         // Opens a entry point to our program for network clients
@@ -63,7 +63,10 @@ public class HttpServer {
         } else {
             if (requestPath.equals("/echo")) {
                 handleEchoRequest(clientSocket, requestTarget, questionPos);
-            } else if (requestPath.equals("/api/products")) {
+            } else
+                if(requestPath.equals("/")){
+                    requestPath = "/index.html";
+                }else if (requestPath.equals("/api/products")) {
                 handleGetProducts(clientSocket);
             } else {
                 File file = new File(contentRoot, requestPath);
@@ -96,11 +99,11 @@ public class HttpServer {
     }
 
     private void handleGetProducts(Socket clientSocket) throws IOException {
-        String body = "<ul>";
+        StringBuilder body = new StringBuilder("<ul>");
         for (String productName : productNames) {
-            body += "<li>" + productName + "</li>";
+            body.append("<li>").append(productName).append("</li>");
         }
-        body += "</ul>";
+        body.append("</ul>");
         String response = "HTTP/1.1 200 OK\r\n" +
                 "Content-Length: " + body.length() + "\r\n" +
                 "Content-Type: text/html\r\n" +
