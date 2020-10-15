@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HttpServerTest {
@@ -77,17 +79,18 @@ class HttpServerTest {
     }
 
     @Test
-    void shouldPostNewProduct() throws IOException {
+    void shouldPostNewProduct() throws IOException, SQLException {
         HttpServer server = new HttpServer(10008);
         HttpClient client = new HttpClient("localhost", 10008, "/api/newProduct", "POST", "productName=apples&price=10");
         assertEquals(200, client.getStatusCode());
-        assertEquals(List.of("apples"), server.getProductNames());
+        assertThat(server.getProductNames())
+                .contains("apples");
     }
 
     @Test
-    void shouldReturnExistingProducts() throws IOException {
+    void shouldReturnExistingProducts() throws IOException, SQLException {
         HttpServer server = new HttpServer(10009);
-        server.getProductNames().add("Coconuts");
+        HttpClient client2 = new HttpClient("localhost", 10009, "/api/newProduct", "POST", "productName=Coconuts&price=10");
         HttpClient client = new HttpClient("localhost", 10009, "/api/products");
         assertEquals("<ul><li>Coconuts</li></ul>", client.getResponseBody());
     }

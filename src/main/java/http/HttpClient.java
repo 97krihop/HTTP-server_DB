@@ -7,9 +7,9 @@ import java.util.Map;
 
 public class HttpClient {
 
-    private int statusCode;
-    private Map<String, String> responseHeaders = new HashMap<>();
-    private String responseBody;
+    private final int statusCode;
+    private final Map<String, String> responseHeaders;
+    private final String responseBody;
 
     // Constructor - det som kalles når vi sier new
     public HttpClient(final String hostname, int port, final String requestTarget) throws IOException {
